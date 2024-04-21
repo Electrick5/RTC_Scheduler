@@ -134,7 +134,7 @@ void RTCScheduler::configure_storage(){
         this->parent_->send_notification_to_ha("Scheduler Error", "Storage not detected","433" );
     }
 }
-void RTCScheduler:: test(){
+/* void RTCScheduler:: test(){
                 ESP_LOGD(TAG, "Sched Mem size in bytes: %d",this->storage_->get_memory_size());
 //                int myValue2 = -366;
 //                this->storage_->write_object(10, myValue2); //(location, data)
@@ -143,7 +143,7 @@ void RTCScheduler:: test(){
                 ESP_LOGD(TAG, "I as sched read: %d",myRead2 );
 }
 
-
+*/
 void RTCScheduler::on_text_schedule_recieved(int schedule_slot_id, std::string &events) {
     ESP_LOGD(TAG, "%s Text Schedule Slot %d   recieved %s",this->name_.c_str(), schedule_slot_id, events.c_str());
     this->parent_->send_notification_to_ha("Text Rxed","Have rx a text schedule","103");
