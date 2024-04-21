@@ -11,8 +11,10 @@ namespace rtc_scheduler {
 
 static const char *TAG = "rtc_scheduler";
 // TODO Add timing code
-//RTCScheduler::RTCScheduler() {}
-//RTCScheduler::RTCScheduler(const std::string &name) : EntityBase(name) {}
+RTCScheduler::RTCScheduler() {}
+RTCScheduler::RTCScheduler(const std::string &name) {
+  this->set_name(name.c_str());
+}
 
 void RTCScheduler::setup() {
 
