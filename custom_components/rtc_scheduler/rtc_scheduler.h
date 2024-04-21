@@ -110,7 +110,7 @@ class RTCScheduler : public Component, public api::CustomAPIDevice  {
     void set_name(const std::string &name) { this->name_ = name; }
     void on_schedule_recieved(int schedule_slot_id,  std::vector<int> days ,std::vector<int> hours ,std::vector<int> minutes, std::vector<std::string> &actions);
     void on_text_schedule_recieved(int schedule_slot_id, std::string &events); 
-    void send_log_message_to_HA(String level, String logMessage, String sender);
+    void send_log_message_to_HA(std::string level, std::string logMessage, std::string sender);
     void on_schedule_erase_recieved(int schedule_slot_id);
     void on_erase_all_schedules_recieved();
     void set_storage_offset(uint16_t storage_offset) { this->storage_offset_ = storage_offset; }
