@@ -20,24 +20,24 @@ namespace esphome {
 namespace rtc_scheduler {
 /* 
 enum SchedulerMode : uint8_t {
-  IDLE,      // Schedule Controller is off
-  AUTO_RUN,    // Schedule Controller is running
-  MANUAL_RUN,    // Switches are all under manual control
+  IDLE,      // Контролер розкладу вимкнено
+  AUTO_RUN,    // Контролер розкладу запущено
+  MANUAL_RUN,    // Всі перемикачі знаходяться в ручному управлінні
 };
 
 enum ScheduledSwState : uint8_t {
-  MANUAL_OFF,  // Switch is manually off until mode is changed
-  EARLY_OFF,  // Switch is manually off until next on event
-  AUTO_OFF,    // Switch is scheduled off
-  MANUAL_ON,   // Switch is manually on until mode is changed
-  BOOST_ON,    // Switch is boosted on until next off event
-  AUTO_ON      // Switch is scheduled on
+  MANUAL_OFF,  // Перемикач вимикається вручну до зміни режиму
+  EARLY_OFF,  // Перемикач вручну вимкнено до наступної події
+  AUTO_OFF,    // Перемикач заплановано вимкнено
+  MANUAL_ON,   // Перемикач увімкнено вручну до зміни режиму
+  BOOST_ON,    // Перемикач увімкнено до наступного вимкнення
+  AUTO_ON      // Перемикач заплановано ввімкнено
 };
 
 enum ScheduledSwMode : uint8_t {
-  AUTO_MODE,  // Switch is under scheduler control
-  MANUAL_MODE,  // Switch is under manual control
-  SETUP_MODE    // Schedule for switch is not available 
+  AUTO_MODE,  // Перемикач знаходиться під контролем планувальника
+  MANUAL_MODE,  // Перемикач знаходиться в ручному управлінні
+  SETUP_MODE    // Розклад для перемикання недоступний
 };
 */
 struct struct_schedule_event
@@ -62,11 +62,11 @@ static const uint16_t SLOT_INVALID_WORD_1 = 0x55AA;
 static const uint16_t SLOT_VALID_WORD_1 = 0x5A5A;
 
 
-class RTCScheduler;                  // this component
-class RTCSchedulerControllerSwitch;  // Main switch for the controller
+class RTCScheduler;                  // цей компонент
+class RTCSchedulerControllerSwitch;  // Головний вимикач для контролера
 class RTCSchedulerTextSensor;         // Text sensor to display status to HA frontend
-class RTCSchedulerItemMode_Select;    // Select that sets the mode of the scheduled item
-class RTCSchedulerHub;                // The master component
+class RTCSchedulerItemMode_Select;    // Датчик тексту для відображення статусу в інтерфейсі HA
+class RTCSchedulerHub;                // Головний компонент
 template<typename... Ts> class ShutdownAction;
 template<typename... Ts> class StartAction;
 
