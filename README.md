@@ -74,64 +74,64 @@ rtc_scheduler:
             scheduled_indicator: "Element 2 Indicator"    
 ```
 ## Configuration variables:
-**id** *(Required)* Manually specify the ID used for code generation.
+**id** *(Required)* Вручну вкажіть ідентифікатор, який використовується для створення коду.
 
-**storage** *(**Required**, string)* : This is the ID of the storage component.
+**storage** *(**Required**, string)* : це ідентифікатор компонента сховища.
 
-**storage_offset** *(**Required**, int)* : This is offset in bytes from the start of the E2 device useful if you have multiple schedulers configured.
+**storage_offset** *(**Required**, int)* : Це зсув у байтах від початку пристрою E2, корисний, якщо у вас налаштовано кілька планувальників.
 
-**storage_size** *(**Required**, int)* : This is size of the E2 device in bytes.
+**storage_size** *(**Required**, int)* : це розмір пристрою E2 у байтах.
 
-**max_events_per_switch** *(**Required**, int)* : This is number of events each slot can hold.
+**max_events_per_switch** *(**Required**, int)* : це кількість подій, які може містити кожен слот.
 
-**main_switch** *(**Required**, string)*:  The name for the scheduler controller's main switch as it will appear in the front end. This switch, when turned on, Allows the scheduler to opperate either from a schedule or from manual controls (select) from Home Assistant.
+**main_switch** *(**Required**, string)*:  ім’я головного перемикача контролера планувальника, яке відображатиметься у інтерфейсі. Якщо цей перемикач увімкнено, він дозволяє планувальнику працювати за розкладом або за допомогою елементів ручного керування (вибір) із Home Assistant.
 
-**switches** *(**Required**, list)* : A list of scheduled items the scheduler can control. Each item consists of:
+**switches** *(**Required**, list)* : список запланованих елементів, якими може керувати планувальник. Кожен предмет складається з:
 
-- **scheduled_switch** *(Optiopnal, string)*: Name of a virtual switch that can be controlled by the scheduler. This can use the standard ESPHome switch on_turn_on & on_turn_off functions.
-- **scheduled_id** *(Optional, ID)*: This is the :ref:`switch <config-switch>` component. Typically this would be a :doc:`GPIO switch <switch/gpio>` wired to control a relay or other switching device. It is not recommended to expose this switch to the front end.
-- **scheduled_slot** *(**Required**, int)*: This is the slot number for the scheduled switch. This is used to store the events for the schedule item in the E2 device. The range is 1 to 255. It should be note that these must be unique per schedule controller
-- **scheduled_mode** *(**Required, string**)*: Name of the select that is added to the home assistant frontend and used to control the scheduled item. Option are:-
+- **scheduled_switch** *(Optiopnal, string)*: ім’я віртуального комутатора, яким може керувати планувальник. Для цього можна використовувати стандартні функції перемикача ESPHome on_turn_on і on_turn_off.
+- **scheduled_id** *(Optional, ID)*: це switch <config-switch>компонент :ref:. Зазвичай це :doc: GPIO switch <switch/gpio>підключений для керування реле чи іншим комутаційним пристроєм. Не рекомендується виставляти цей перемикач на передній кінець.
+- **scheduled_slot** *(**Required**, int)*: це номер слота для запланованого перемикання. Це використовується для зберігання подій для елемента розкладу в пристрої E2. Діапазон від 1 до 255. Слід зазначити, що вони мають бути унікальними для контролера розкладу
+- **scheduled_mode** *(**Required, string**)*: ім’я вибору, яке додається до інтерфейсу домашнього помічника та використовується для керування запланованим елементом. Варіанти:-
 
-* ```Manual Off```, The schedule item is permentley off. Until a another mode is selected.
+* ```Manual Off```, Пункт розкладу постійно вимкнено. Поки не буде обрано інший режим.
 
-* ```Early Off```,  The schedule item is in ```Auto``` and can be set to off before the scheduled time. Once the scheduled time is reached the mode will revert back to ```Auto```
+* ```Early Off```,  Елемент розкладу ввімкнено Auto, і його можна вимкнути до запланованого часу. Після настання запланованого часу режим повернеться Auto
 
-* ```Auto```,  The scheduled item is turn on and off as per the supplied schedule.
+* ```Auto```,  Запланований елемент вмикається та вимикається відповідно до наданого розкладу.
 
-* ```Manual On```,  The schedule item is permentley on. Until a another mode is selected.
+* ```Manual On```,  Елемент розкладу постійно ввімкнено. Поки не буде обрано інший режим.
 
-* ```Boost On```,  The schedule item is in ```Auto``` and can be extended on past the scheduled off time. Once the next scheduled on time is reached the mode will revert back to ```Auto```. Boost can be canceled at any time by selecting ```Auto``` again. At which point the scheduled irtem will adopt the correct state for that time period from the supplied schedule.
 
-- **scheduled_status** *(Optiopnal, string)*: Name of a text sensor that displays the current state of the scheduled item in Home Assistant. Useful for debugging schedules.
 
-- **scheduled_indicator** *(Optiopnal, string)*: Name of a binary sensor that reflects the current state of the scheduled item in Home Assistant.
+* ```Boost On```,  Елемент розкладу доступний Autoі може бути продовжений після закінчення запланованого часу вимкнення. Після настання наступного запланованого часу режим повернеться до Auto. Посилення можна скасувати в будь-який час, вибравши Autoще раз. У цей момент запланований елемент прийме правильний стан для цього періоду часу з наданого розкладу.
+
+- **scheduled_status** *(Optiopnal, string)*: назва текстового датчика, який відображає поточний стан запланованого елемента в Home Assistant. Корисно для налагодження розкладів.
+- **scheduled_indicator** *(Optiopnal, string)*:  ім’я бінарного датчика, який відображає поточний стан запланованого елемента в Home Assistant.
 
 ## Services presented to Home Assistant
-The scheduler presents a set of services to Home Assistant
-Each service is prefixed by *"esphome."* and the *device_name* and *scheduler_name* from the config in the yaml. As an example ```ESPHome: schedule_test_pump_scheduler_send_schedule"```
+Планувальник надає набір послуг Home Assistant. Кожна служба має префікс «esphome». і device_name і scheduler_name з конфігурації в yaml. Як приклад "ESPHome: schedule_test_pump_scheduler_send_schedule"
 
-The services are as follows:-
-### send_schedule
-Send a schedule for a slot.
+Послуги такі:-
+### send_schedule "надсилати розклад"
+Надішліть розклад для слота.
 #### parameters
-- ```schedule_slot_id int``` - The slot to be updated.
-- ```std::vector<int> days``` - Array ints representing days (0-6)
-- ```std::vector<int> hours``` - Array ints representing hours (0-23)
-- ```std::vector<int> minutes``` - Array ints representing hours (0-59)
-- ```std::vector<std::string> action``` - Currently "ON" or "OfFF" to be expanded to manage state. 
+- ```schedule_slot_id int``` - Слот для оновлення.
+- ```std::vector<int> days``` - Масив ints, що представляє дні (0-6)
+- ```std::vector<int> hours``` - Масив ints, що представляє години (0-23)
+- ```std::vector<int> minutes``` - Масив ints, що представляє хвилини (0-59)
+- ```std::vector<std::string> action``` - Наразі "ON" або "OfFF" буде розширено для керування станом. 
 
-### send_schedule_text
-Send a schedule for a slot.
+### send_schedule_text "надсилати_текст_розкладу"
+Надішліть розклад для слота.
 #### parameters
-- ```scheduler_id string``` - The ID of the schedule controller 
-- ```schedule_slot_id int``` - The slot to be updated.
-- ```std::string ``` - Takes the form of Slot ID, Event, Event, ..... 
-- Event encodes as this DHHMMState where state is either ON or OFF
-- Example "00000OFF,61140ON,61400OFF" - Turn on Saturday at 11:40, Turn off Saturday at 14:00
-> :info:  **Note Every schedule must start with a state for Sunday 00:00.**
+- ```scheduler_id string``` - ID контролера розкладу 
+- ```schedule_slot_id int``` - Слот для оновлення.
+- ```std::string ``` - Має форму ідентифікатора слота, події, події, .....
+- Подія кодується як цей стан DHHMMState, де стан ON або OFF
+- Приклад "00000OFF,61140ON,61400OFF" - увімкнути в суботу об 11:40, вимкнути в суботу о 14:00
+> :info:  **Примітка Кожен розклад має починатися зі стану неділі 00:00.**
 ### erase_schedule
-Erase a single slot schedule
+Стерти розклад одного слота
 #### parameters
 - ```schedule_slot_id int``` - The slot to be deleted
 ### erase_all_schedules 
