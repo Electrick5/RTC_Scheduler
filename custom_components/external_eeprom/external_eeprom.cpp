@@ -26,13 +26,13 @@ void ExtEepromComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "I2C HW buffer size = %d", this->get_i2c_buffer_size());
   ESP_LOGCONFIG(TAG, "Page write time = %d", this->get_page_write_time_());
 }
-/// @brief This checks whether the device is connected and not busy
-/// @param Caller can pass in an 0xFF I2C address. This is helpful for larger EEPROMs that have two addresses (see block
+/// @brief Це перевіряє, чи пристрій підключений і чи не зайнятий
+/// @param Абонент може передати адресу 0xFF I2C. Це корисно для великих EEPROM, які мають дві адреси (див. блок
 /// bit 2).
-/// @return an boolean True for connected
+/// @повертає логічне значення True для підключеного
 bool ExtEepromComponent::is_connected(uint8_t i2c_address) {
   i2c::ErrorCode err;
-  if (i2c_address == 255)  // We can't set the default so we use 255 instead
+  if (i2c_address == 255)  // Ми не можемо встановити значення за умовчанням, тому замість нього використовуємо 255
     i2c_address = this->address_;
   err = this->bus_->write(i2c_address, nullptr, 0, true);
   if (err != i2c::ERROR_OK)
@@ -40,9 +40,9 @@ bool ExtEepromComponent::is_connected(uint8_t i2c_address) {
   return (err == i2c::ERROR_OK);
 }
 
-/// @brief Reads a byte from a given location
-/// @param memaddr is the location to read
-/// @return the byte read from device
+/// @brief Читає байт із заданого місця
+/// @param memaddr — місце для читання
+/// @повертає байт, прочитаний із пристрою
 uint8_t ExtEepromComponent::read8(uint32_t memaddr) {
   uint8_t temp_byte;
   this->read(memaddr, &temp_byte, 1);
@@ -80,12 +80,12 @@ double ExtEepromComponent::read_double(uint32_t memaddr) {
   this->read(memaddr, (uint8_t *) &val, sizeof(double));
   return val;
 }
-/// @brief Bulk read from the device
-/// @note breaking up read amt into 32 byte chunks (can be overriden with setI2Cbuffer_size)
-/// @note Handles a read that straddles the 512kbit barrier
-/// @param memaddr is the starting location to read
-/// @param buff is the pointer to an array of bytes that will be used to store the data received
-/// @param buffer_size is the size of the buffer and also the number of bytes to be read
+/// @brief Масове читання з пристрою
+/// @зауважте, що розбиття обсягу читання на 32-байтові фрагменти (можна змінити за допомогою setI2Cbuffer_size)
+/// @примітка Обробляє читання, яке перетинає бар'єр 512 Кбіт
+/// @param memaddr є початковим розташуванням для читання
+/// @param buff — це вказівник на масив байтів, які будуть використовуватися для зберігання отриманих даних
+/// @param buffer_size — це розмір буфера, а також кількість байтів для читання
 void ExtEepromComponent::read(uint32_t memaddr, uint8_t *buff, uint16_t buffer_size) {
   ESP_LOGVV(TAG, "Read %d bytes from address %d", buffer_size, memaddr);
   uint16_t size = buffer_size;
@@ -100,13 +100,13 @@ void ExtEepromComponent::read(uint32_t memaddr, uint8_t *buff, uint16_t buffer_s
     // Check if we are dealing with large (>512kbit) EEPROMs
     uint8_t i2c_address = this->address_;
     if (this->get_memory_size_() > 0xFFFF) {
-      // Figure out if we are going to cross the barrier with this read
+      // З’ясуйте, чи збираємося ми перетнути бар’єр із цим читанням
       if (memaddr < 0xFFFF) {
         if (0xFFFF - memaddr < amt_to_read)  // 0xFFFF - 0xFFFA < I2C_buffer_size
-          amt_to_read = 0xFFFF - memaddr;    // Limit the read amt to go right up to edge of barrier
+          amt_to_read = 0xFFFF - memaddr;    // Обмежте кількість зчитувань до краю бар'єру
       }
 
-      // Figure out if we are accessing the lower half or the upper half
+      // Визначте, чи ми маємо доступ до нижньої чи верхньої половини
       if (memaddr > 0xFFFF)
         i2c_address |= 0b100;  // Set the block bit to 1
     }
@@ -195,12 +195,12 @@ void ExtEepromComponent::write_double(uint32_t memaddr, double value) {
     this->write(memaddr, (uint8_t *) &val, sizeof(double));
   }
 }
-/// @brief Bulk write to the device
-/// @note breaking up read amt into 32 byte chunks (can be overriden with setI2Cbuffer_size)
-/// @note Handles a write that straddles the 512kbit barrier
-/// @param memaddr is the starting location to write
-/// @param data_to_write is the pointer to an array of bytes that will be written
-/// @param buffer_size is the size of the buffer and also the number of bytes to be written
+/// @brief Масовий запис на пристрій
+/// @note розбиває обсяг читання на 32-байтові фрагменти (можна перевизначити за допомогою setI2Cbuffer_size)
+/// @note Обробляє запис, який перетинає бар'єр 512 Кбіт
+/// @param memaddr є місцем початку запису
+/// @param data_to_write — це вказівник на масив байтів, який буде записано
+/// @param buffer_size — це розмір буфера, а також кількість байтів для запису
 void ExtEepromComponent::write(uint32_t memaddr, uint8_t *data_to_write, uint16_t buffer_size) {
   ESP_LOGVV(TAG, "Write %d bytes to address %d", buffer_size, memaddr);
   uint16_t size = buffer_size;
@@ -413,7 +413,7 @@ void ExtEepromComponent::write_block_(uint8_t deviceaddr, uint32_t memaddr, cons
     ESP_LOGE(TAG, "Write raise this error %d on writing data to this address %d", ret, memaddr);
   }
 }
-// @brief Sets the size of the device in bytes
+// @brief Встановлює розмір пристрою в байтах
 /// @param memSize contains the size of the device
 void ExtEepromComponent::set_memory_size_(uint32_t mem_size) { memory_size_bytes_ = mem_size; }
 /// @brief Gets the user specified size of the device in bytes
@@ -432,11 +432,11 @@ void ExtEepromComponent::set_page_write_time_(uint8_t write_time_ms) { memory_pa
 /// @return page write time in ms
 uint8_t ExtEepromComponent::get_page_write_time_() { return memory_page_write_time_ms_; }
 /// @brief Set address_bytes for the device
-/// @param address_bytes contains the number of bytes the device uses for address
+/// @param address_bytes містить кількість байтів, які пристрій використовує для адреси
 void ExtEepromComponent::set_address_size_bytes_(uint8_t address_size_bytes) {
   this->address_size_bytes_ = address_size_bytes;
 }
-/// @brief Gets the number of bytes used for the address
+/// @brief Отримує кількість байтів, використаних для адреси
 /// @return size in bytes
 uint8_t ExtEepromComponent::get_address_size_bytes_() { return this->address_size_bytes_; }
 }  // namespace external_eeprom
