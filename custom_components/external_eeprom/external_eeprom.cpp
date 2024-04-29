@@ -26,10 +26,10 @@ void ExtEepromComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "I2C HW buffer size = %d", this->get_i2c_buffer_size());
   ESP_LOGCONFIG(TAG, "Page write time = %d", this->get_page_write_time_());
 }
-/// @brief This checks whether the device is connected and not busy
-/// @param Caller can pass in an 0xFF I2C address. This is helpful for larger EEPROMs that have two addresses (see block
-/// bit 2).
-/// @return an boolean True for connected
+/// @brief Це перевіряє, чи пристрій підключено та чи не зайнятий
+/// @param Виклик може передати адресу 0xFF I2C. Це корисно для великих EEPROM, які мають дві адреси (див. блок
+/// біт 2).
+/// @повернути логічне значення True для підключеного
 bool ExtEepromComponent::is_connected(uint8_t i2c_address) {
   i2c::ErrorCode err;
   if (i2c_address == 255)  // We can't set the default so we use 255 instead
