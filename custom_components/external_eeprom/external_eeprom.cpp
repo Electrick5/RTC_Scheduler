@@ -26,13 +26,13 @@ void ExtEepromComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "I2C HW buffer size = %d", this->get_i2c_buffer_size());
   ESP_LOGCONFIG(TAG, "Page write time = %d", this->get_page_write_time_());
 }
-/// @brief This checks whether the device is connected and not busy
-/// @param Caller can pass in an 0xFF I2C address. This is helpful for larger EEPROMs that have two addresses (see block
+/// @brief Це перевіряє, чи пристрій підключений і чи не зайнятий
+/// @param Абонент може передати адресу 0xFF I2C. Це корисно для великих EEPROM, які мають дві адреси (див. блок
 /// bit 2).
-/// @return an boolean True for connected
+/// @повертає логічне значення True для підключеного
 bool ExtEepromComponent::is_connected(uint8_t i2c_address) {
   i2c::ErrorCode err;
-  if (i2c_address == 255)  // We can't set the default so we use 255 instead
+  if (i2c_address == 255)  // Ми не можемо встановити значення за умовчанням, тому замість нього використовуємо 255
     i2c_address = this->address_;
   err = this->bus_->write(i2c_address, nullptr, 0, true);
   if (err != i2c::ERROR_OK)
@@ -40,9 +40,9 @@ bool ExtEepromComponent::is_connected(uint8_t i2c_address) {
   return (err == i2c::ERROR_OK);
 }
 
-/// @brief Reads a byte from a given location
-/// @param memaddr is the location to read
-/// @return the byte read from device
+/// @brief Читає байт із заданого місця
+/// @param memaddr — місце для читання
+/// @повертає байт, прочитаний із пристрою
 uint8_t ExtEepromComponent::read8(uint32_t memaddr) {
   uint8_t temp_byte;
   this->read(memaddr, &temp_byte, 1);
@@ -80,12 +80,12 @@ double ExtEepromComponent::read_double(uint32_t memaddr) {
   this->read(memaddr, (uint8_t *) &val, sizeof(double));
   return val;
 }
-/// @brief Bulk read from the device
-/// @note breaking up read amt into 32 byte chunks (can be overriden with setI2Cbuffer_size)
-/// @note Handles a read that straddles the 512kbit barrier
-/// @param memaddr is the starting location to read
-/// @param buff is the pointer to an array of bytes that will be used to store the data received
-/// @param buffer_size is the size of the buffer and also the number of bytes to be read
+/// @ brief Масове читання з пристрою
+/// @ примітка розбиває читання amt на 32-байтові фрагменти (може бути замінено за допомогою setI2Cbuffer_size)
+/// @ note Обробляє читання, яке перетинає бар’єр 512 Кбіт
+/// @ param memaddr є місцем початку читання
+/// @ param buff — це вказівник на масив байтів, які будуть використовуватися для зберігання отриманих даних
+/// @ param buffer_size — це розмір буфера, а також кількість байтів для читання
 void ExtEepromComponent::read(uint32_t memaddr, uint8_t *buff, uint16_t buffer_size) {
   ESP_LOGVV(TAG, "Read %d bytes from address %d", buffer_size, memaddr);
   uint16_t size = buffer_size;
@@ -131,11 +131,11 @@ void ExtEepromComponent::read(uint32_t memaddr, uint8_t *buff, uint16_t buffer_s
     size -= amt_to_read;
   }
 }
-/// @brief Read a std::string from the device
-/// @note It write the string with an extra byte containing the size at the memaddr
-/// @note It is limited to reading a max length of 254 bytes
-/// @param memaddr is the starting location to read
-/// @param str_to_read will hold the bytes read from the device on return of the fuction
+/// @ brief Читання std::string із пристрою
+/// @ note Він записує рядок із додатковим байтом, що містить розмір у memaddr
+/// @ примітка Максимальна довжина читання обмежена 254 байтами
+/// @ param memaddr є місцем початку читання
+/// @ param str_to_read зберігатиме байти, зчитані з пристрою після повернення функції
 
 uint32_t ExtEepromComponent::read_string_from_eeprom(uint32_t memaddr, std::string &str_to_read) {
   uint8_t new_str_len = read8(memaddr);
@@ -145,10 +145,10 @@ uint32_t ExtEepromComponent::read_string_from_eeprom(uint32_t memaddr, std::stri
   str_to_read = (char *) data;
   return memaddr + 1 + new_str_len;
 }
-/// @brief Writes a byte to a given location
-/// @note It will check first to see if loccation already has the value to protect write cycles
-/// @param memaddr is the location to write
-/// @param data_to_write contains the byte to be written
+/// @ brief Записує байт у задане розташування
+/// @ note Спочатку буде перевірено, чи місце розташування вже має значення для захисту циклів запису
+/// @ param memaddr — місце для запису
+/// @ param data_to_write містить байт для запису
 void ExtEepromComponent::write8(uint32_t memaddr, uint8_t data_to_write) {
   if (read8(memaddr) != data_to_write) {  // Update only if data is new
     write(memaddr, &data_to_write, 1);
@@ -195,12 +195,12 @@ void ExtEepromComponent::write_double(uint32_t memaddr, double value) {
     this->write(memaddr, (uint8_t *) &val, sizeof(double));
   }
 }
-/// @brief Bulk write to the device
-/// @note breaking up read amt into 32 byte chunks (can be overriden with setI2Cbuffer_size)
-/// @note Handles a write that straddles the 512kbit barrier
-/// @param memaddr is the starting location to write
-/// @param data_to_write is the pointer to an array of bytes that will be written
-/// @param buffer_size is the size of the buffer and also the number of bytes to be written
+/// @brief Масовий запис на пристрій
+/// @note розбиває обсяг читання на 32-байтові фрагменти (можна перевизначити за допомогою setI2Cbuffer_size)
+/// @note Обробляє запис, який перетинає бар'єр 512 Кбіт
+/// @param memaddr є місцем початку запису
+/// @param data_to_write — це вказівник на масив байтів, який буде записано
+/// @param buffer_size — це розмір буфера, а також кількість байтів для запису
 void ExtEepromComponent::write(uint32_t memaddr, uint8_t *data_to_write, uint16_t buffer_size) {
   ESP_LOGVV(TAG, "Write %d bytes to address %d", buffer_size, memaddr);
   uint16_t size = buffer_size;
@@ -256,11 +256,11 @@ void ExtEepromComponent::write(uint32_t memaddr, uint8_t *data_to_write, uint16_
   }
 }
 
-/// @brief Write a std::string to the device
-/// @note It writes the string with an extra byte containing the size at the memaddr eg address 0
-/// @note it is limited to writing a max length of the string of 254 bytes and will trim extra bytes
-/// @param memaddr is the starting location to write
-/// @param str_to_write contains the std::string to be wriiten
+/// @brief Записати std::string на пристрій
+/// @note Записує рядок із додатковим байтом, що містить розмір у memaddr, наприклад, адреса 0
+/// @note це обмежено записом максимальної довжини рядка в 254 байти та обрізає додаткові байти
+/// @param memaddr є місцем початку запису
+/// @param str_to_write містить std::string для запису
 uint32_t ExtEepromComponent::write_string_to_eeprom(uint32_t memaddr, std::string &str_to_write) {
   if (str_to_write.length() > 254) {
     ESP_LOGE(TAG, "String to long. Limit is 254 chars");
@@ -302,9 +302,9 @@ void ExtEepromComponent::dump_eeprom(uint32_t start_addr, uint16_t word_count) {
   }
 }
 
-/// @brief Erase the entire device
-/// @note **** to be used carefully, as there is no recovery ****
-/// @param value_to_write optional value to be written to all locations defaults to 0x00
+/// @brief Стерти весь пристрій
+/// @note **** використовувати обережно, оскільки немає відновлення ****
+/// @param value_to_write необов’язкове значення для запису в усі місця за замовчуванням 0x00
 void ExtEepromComponent::erase(uint8_t value_to_write) {
   uint8_t temp_buffer[this->memory_page_size_bytes_];
   for (uint32_t x = 0; x < this->memory_page_size_bytes_; x++)
@@ -382,11 +382,11 @@ void ExtEepromComponent::set_device_config_(uint32_t mem_size, uint8_t address_b
   this->set_page_write_time_(write_time_ms);
 }
 
-/// @brief Sets the hw I2C buffer size -2, as 2 bytes are needed for control & addr
-/// @param buffer size in bytes, (ESP devices has a 128 I2C buffer so it is set to 126)
+/// @brief Встановлює розмір буфера hw I2C -2, оскільки 2 байти потрібні для керування та адреси
+/// @param розмір буфера в байтах (пристрої ESP мають буфер 128 I2C, тому він встановлений на 126)
 void ExtEepromComponent::set_i2c_buffer_size(uint8_t i2c_buffer_size) { i2c_buffer_size_ = i2c_buffer_size - 2; }
-/// @brief Gets the hw I2C buffer size -2, as 2 bytes are needed for control & addr
-/// @return buffer size in bytes
+/// @brief Отримує розмір буфера hw I2C -2, оскільки 2 байти потрібні для керування та адреси
+/// @return розмір буфера в байтах
 uint8_t ExtEepromComponent::get_i2c_buffer_size() { return i2c_buffer_size_; }
 
 // private functions
@@ -413,31 +413,31 @@ void ExtEepromComponent::write_block_(uint8_t deviceaddr, uint32_t memaddr, cons
     ESP_LOGE(TAG, "Write raise this error %d on writing data to this address %d", ret, memaddr);
   }
 }
-// @brief Sets the size of the device in bytes
-/// @param memSize contains the size of the device
+// @brief Встановлює розмір пристрою в байтах
+/// @param memSize містить розмір пристрою
 void ExtEepromComponent::set_memory_size_(uint32_t mem_size) { memory_size_bytes_ = mem_size; }
-/// @brief Gets the user specified size of the device in bytes
-/// @return size in bytes
+/// @brief Отримує вказаний користувачем розмір пристрою в байтах
+/// @повернутий розмір у байтах
 uint32_t ExtEepromComponent::get_memory_size_() { return memory_size_bytes_; }
-/// @brief Sets the page size of the device in bytes
-/// @param page_size contains the size of the device pages
+/// @brief Встановлює розмір сторінки пристрою в байтах
+/// @param page_size містить розмір сторінок пристрою
 void ExtEepromComponent::set_page_size_(uint16_t page_size) { memory_page_size_bytes_ = page_size; }
-/// @brief Gets the user specified size of the device pages in bytes
-/// @return Page size in bytes
+/// @brief Отримує вказаний користувачем розмір сторінок пристрою в байтах
+/// @return Розмір сторінки в байтах
 uint16_t ExtEepromComponent::get_page_size_() { return memory_page_size_bytes_; }
-/// @brief Sets the page write for the device in ms
-/// @param write_time_ms contains the time to write a page of the device
+/// @brief Встановлює запис сторінки для пристрою в мс
+/// @param write_time_ms містить час для запису сторінки пристрою
 void ExtEepromComponent::set_page_write_time_(uint8_t write_time_ms) { memory_page_write_time_ms_ = write_time_ms; }
-/// @brief Gets the user specified write time for a device page in ms
-/// @return page write time in ms
+/// @brief Отримує вказаний користувачем час запису для сторінки пристрою в мс
+/// час запису сторінки @return у мс
 uint8_t ExtEepromComponent::get_page_write_time_() { return memory_page_write_time_ms_; }
-/// @brief Set address_bytes for the device
-/// @param address_bytes contains the number of bytes the device uses for address
+/// @brief Встановити address_bytes для пристрою
+/// @param address_bytes містить кількість байтів, які пристрій використовує для адреси
 void ExtEepromComponent::set_address_size_bytes_(uint8_t address_size_bytes) {
   this->address_size_bytes_ = address_size_bytes;
 }
-/// @brief Gets the number of bytes used for the address
-/// @return size in bytes
+/// @brief Отримує кількість байтів, використаних для адреси
+/// @повернутий розмір у байтах
 uint8_t ExtEepromComponent::get_address_size_bytes_() { return this->address_size_bytes_; }
 }  // namespace external_eeprom
 }  // namespace esphome
