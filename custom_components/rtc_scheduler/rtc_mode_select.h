@@ -62,7 +62,7 @@ class RTCSchedulerItemMode_Select : public select::Select, public Component {
   std::string item_mode_state_str_ = "Not Configured Off";
   // The scheduled item slot number used to get schedule from flash
   uint8_t item_slot_number_ = 0;
-  // Optional switch to allow the scheduled item to iuse turn_on / turn_off 
+  // Додатковий перемикач, щоб дозволити запланованому елементу використовувати turn_on/turn_off 
   RTCSchedulerControllerSwitch *item_sw_{nullptr};
   // Optional Text sensor to display the status of the scheduled item to HA
   RTCSchedulerTextSensor *item_status_{nullptr};  
