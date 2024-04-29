@@ -38,7 +38,7 @@ class ExtEepromComponent : public i2c::I2CDevice, public Component {
   float read_float(uint32_t memaddr);
   double read_double(uint32_t memaddr);
   void read(uint32_t memaddr, uint8_t *buff,
-            uint16_t buffer_size);  // Read a buffer of buffersize (bytes) from adress memaddr
+            uint16_t buffer_size);  // Прочитати буфер розміру буфера (байти) з адреси memaddr
   uint32_t read_string_from_eeprom(uint32_t memaddr,
                                    std::string &str_to_read);  // Read a Std::string from adress memaddr
 
@@ -58,7 +58,7 @@ class ExtEepromComponent : public i2c::I2CDevice, public Component {
   void set_memory_type(EEEDeviceType device_type);
   void set_i2c_buffer_size(uint8_t i2c_buffer_size);  // Set the size of hw buffer -2 for control & addr
   uint8_t get_i2c_buffer_size();                      // Get the size of hw buffer -2 for control & addr
-  // Functionality to 'get' and 'put' objects to and from EEPROM.
+  // Функціональні можливості для «отримання» та «переміщення» об’єктів до та з EEPROM.
   template<typename T> T &read_object(uint32_t idx, T &t) {
     uint8_t *ptr = (uint8_t *) &t;
     read(idx, ptr, sizeof(T));  // Address, data, sizeOfData
@@ -78,7 +78,7 @@ class ExtEepromComponent : public i2c::I2CDevice, public Component {
   void set_device_config_(uint32_t mem_size, uint8_t address_bytes, uint16_t page_size, uint8_t write_time_ms);
   void set_memory_size_(uint32_t mem_size);                  // Set the size of memory in bytes
   uint32_t get_memory_size_();                               // Return size of memory in bytes
-  void set_page_size_(uint16_t page_size);                   // Set the size of the page we can write a page at a time
+  void set_page_size_(uint16_t page_size);                   // Встановіть розмір сторінки, на яку ми можемо писати сторінку за раз
   uint16_t get_page_size_();                                 // Get the size of the page we can read a page at a time
   void set_address_size_bytes_(uint8_t address_size_bytes);  // Set the number of bytes to use for device address
   uint8_t get_address_size_bytes_();                         // Get the number of bytes to use for device address
