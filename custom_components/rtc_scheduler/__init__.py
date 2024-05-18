@@ -93,8 +93,8 @@ def select_schema(
             }
         )
     return schema
-# TODO validate the slot data in final validate routine
-# TODO Validate data is in real range
+# TODO перевірити дані слота в процедурі остаточної перевірки
+# TODO Дані перевірки знаходяться в реальному діапазоні
 def validate_scheduler(config):
     for  scheduler_hub in config:
         #for scheduler_controller_index, scheduler_controller in enumerate(config):
@@ -115,7 +115,7 @@ def validate_scheduler(config):
 
             if not scheduler_controller[CONF_SWITCHES]:
                 raise cv.Invalid(
-                            f"A controller must have at least one schedule  item, Controller {scheduler_controller_index}"
+                            f"Контролер повинен мати принаймні один елемент розкладу, контролер {scheduler_controller_index}"
                 )
             slots = []    
             for item in scheduler_controller[CONF_SWITCHES]:
@@ -126,11 +126,11 @@ def validate_scheduler(config):
                         slots.append(item[CONF_SCHEDULED_SWITCH_SLOT]) 
                     else:
                         raise cv.Invalid(
-                            f"Slot number {item[CONF_SCHEDULED_SWITCH_SLOT]} cannot be used more than once they must be unique"  
+                            f"Номер слота {item[CONF_SCHEDULED_SWITCH_SLOT]} можна використовувати лише один раз, він має бути унікальним"  
                         )
                 if ((not CONF_SCHEDULED_SWITCH_ID in item) and (not CONF_SCHEDULED_SWITCH in item)):
                     raise cv.Invalid(
-                        f"Slot number {item[CONF_SCHEDULED_SWITCH_SLOT]} must have either a scheduled_switch_id or scheduled_switch"
+                        f"Номер слота {item[CONF_SCHEDULED_SWITCH_SLOT]} повинен мати або scheduled_switch_id, або scheduled_switch"
                     )
             scheduler_controller_index = scheduler_controller_index +1
     return config
