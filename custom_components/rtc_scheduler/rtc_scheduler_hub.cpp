@@ -32,8 +32,8 @@ void RTCSchedulerHub::loop()
 }
 void RTCSchedulerHub::dump_config()
 {
-  ESP_LOGCONFIG(TAG, "Scheduler Hub");
-  ESP_LOGCONFIG(TAG, "RTC Scheduler Hub -- %s", this->name_.c_str());
+  ESP_LOGCONFIG(TAG, "Центр планувальника");
+  ESP_LOGCONFIG(TAG, "RTC Центр планувальника -- %s", this->name_.c_str());
 
 }
 void RTCSchedulerHub::add_controller(RTCScheduler *schedule_controller)
@@ -47,26 +47,26 @@ void RTCSchedulerHub::add_controller(RTCScheduler *schedule_controller)
 // service callbacks
 
 void RTCSchedulerHub::on_text_schedule_recieved(std::string scheduler_id,int schedule_slot_id, std::string events) {
-    ESP_LOGD(TAG, "Text Schedule %s Slot %d   recieved", scheduler_id.c_str(),schedule_slot_id);
+    ESP_LOGD(TAG, "Текст розкладу %s Слот %d   отримано", scheduler_id.c_str(),schedule_slot_id);
     RTCScheduler *the_scheduler = this->get_scheduler(scheduler_id);
         if (the_scheduler != nullptr)
           the_scheduler->on_text_schedule_recieved(schedule_slot_id,events);
 }
 void RTCSchedulerHub::on_schedule_recieved(std::string scheduler_id,int schedule_slot_id, std::vector<int> days ,std::vector<int> hours ,std::vector<int> minutes, std::vector<std::string> actions) {
-    ESP_LOGD(TAG, "Scheduler %s Slot %d schedule recieved",scheduler_id.c_str(), schedule_slot_id);
+    ESP_LOGD(TAG, "Розклад %s Слот %d розклад отримано",scheduler_id.c_str(), schedule_slot_id);
     RTCScheduler *the_scheduler = this->get_scheduler(scheduler_id);
         if (the_scheduler != nullptr)
           the_scheduler->on_schedule_recieved(schedule_slot_id,days,hours,minutes,actions);
 }
 
 void  RTCSchedulerHub::on_schedule_erase_recieved(std::string scheduler_id,int schedule_slot_id){
-    ESP_LOGD(TAG, "%s Schedule Slot %d  erase recieved",scheduler_id.c_str(), schedule_slot_id);
+    ESP_LOGD(TAG, "%s Слот розкладу %d  стерти",scheduler_id.c_str(), schedule_slot_id);
     RTCScheduler *the_scheduler = this->get_scheduler(scheduler_id);
         if (the_scheduler != nullptr)
           the_scheduler->on_schedule_erase_recieved(schedule_slot_id);
 }
 void  RTCSchedulerHub::on_erase_all_schedules_recieved(std::string scheduler_id){
-        ESP_LOGD(TAG, "Hub Erase all schedules recieved sched %s",scheduler_id.c_str());
+        ESP_LOGD(TAG, "Видалити всі розклади %s",scheduler_id.c_str());
         RTCScheduler *the_scheduler = this->get_scheduler(scheduler_id);
         if (the_scheduler != nullptr)
           the_scheduler->on_erase_all_schedules_recieved();
@@ -124,7 +124,7 @@ void RTCSchedulerHub::display_storage_status()
           
          scheduler_id = controller->get_object_id();
          status = controller->get_storage_status();
-         ESP_LOGD(TAG, "Storage for %s is %d",scheduler_id.c_str(),status);
+         ESP_LOGD(TAG, "Для зберігання %s є %d",scheduler_id.c_str(),status);
         } */
 }
 } // namespace rtc_scheduler
