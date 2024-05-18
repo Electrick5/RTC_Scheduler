@@ -12,8 +12,8 @@
 
 namespace esphome {
 namespace rtc_scheduler {
-class RTCSchedulerControllerSwitch;  // The scheduled switch 
-class RTCSchedulerTextSensor;         // Text sensor to display status to HA frontend
+class RTCSchedulerControllerSwitch;  // Заплановане перемикання 
+class RTCSchedulerTextSensor;         // Датчик тексту для відображення статусу в інтерфейсі HA
 enum ItemMode : size_t {
   ITEM_MODE_OFF = 0,
   ITEM_MODE_EARLY,
@@ -60,30 +60,30 @@ class RTCSchedulerItemMode_Select : public select::Select, public Component {
   std::string convertEventTimeToStr(uint16_t event_time) const;
   void control(const std::string &value) override; 
   std::string item_mode_state_str_ = "Not Configured Off";
-  // The scheduled item slot number used to get schedule from flash
+  // Номер слота запланованого елемента, який використовується для отримання розкладу з флеш-пам’яті
   uint8_t item_slot_number_ = 0;
   // Додатковий перемикач, щоб дозволити запланованому елементу використовувати turn_on/turn_off 
   RTCSchedulerControllerSwitch *item_sw_{nullptr};
-  // Optional Text sensor to display the status of the scheduled item to HA
+  // Додатковий сенсор тексту для відображення статусу запланованого елемента в HA
   RTCSchedulerTextSensor *item_status_{nullptr};  
-  // Optional Text sensor to display the next event for the scheduled item to HA
+  // Додатковий сенсор тексту для відображення наступної події для запланованого елемента в HA
   RTCSchedulerTextSensor *item_next_event_{nullptr};  
-  // Optional Binary Sensor to indicate to HA the state of the scheduled item
+  // Додатковий бінарний датчик для вказівки HA стану запланованого елемента
   binary_sensor::BinarySensor* item_on_indicator_ = nullptr; 
-  // Optional switch ID EG GPIO ID so the scheduled item can control it
+  // Додатковий ідентифікатор перемикача EG GPIO ID, щоб запланований елемент міг ним керувати
   switch_::Switch *item_sw_id_{nullptr};
   ESPPreferenceObject pref_;
-  // Used by the scheduled item to maintian its controller state is either off or on
+  // Використовується запланованим елементом, щоб підтримувати стан контролера вимкнено або увімкнено
   bool schedule_controller_state_ = false;
-  // Used by the scheduled item to maintian its switch state, is either off or on 
+  // Використовується запланованим елементом для підтримки його стану перемикача, вимкнено або увімкнено 
   bool schedule_controller_item_state_ = false;
-  // Used to indicate whether the schedule for the item is valid or not
+  // Використовується для вказівки, чи розклад для елемента дійсний чи ні
   bool schedule_valid_ = false;
-  // Text string that holds the next schedule event 
+  // Текстовий рядок, який містить наступну подію розкладу
   std::string next_schedule_event_str_ = "";
-  // Event time in minutes (0-6 Days, 0-23 Hours, 0-59 minutes = Max 10080)
-  uint16_t next_schedule_event_ = 10081; // Note any value above 10080 is invalid eg no event
-  // Event next state EG off or on
+  // Тривалість події в хвилинах (0-6 Days, 0-23 Hours, 0-59 minutes = Max 10080)
+  uint16_t next_schedule_event_ = 10081; // Зверніть увагу, що будь-яке значення вище 10080 є недійсним, наприклад, немає події
+  // Наступний стан події EG вимкнено або увімкнено
   bool next_schedule_state_ = false;
 
   ItemMode item_mode_ = ITEM_MODE_OFF;
