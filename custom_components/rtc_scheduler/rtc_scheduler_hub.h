@@ -9,8 +9,8 @@
 
 namespace esphome {
 namespace rtc_scheduler {
-class RTCScheduler;                       // the scheduler controller
-class RTCSchedulerHub;                    // this component
+class RTCScheduler;                       // контролер планувальника
+class RTCSchedulerHub;                    // цей компонент
 
 class RTCSchedulerHub : public Component, public api::CustomAPIDevice {
  public:
