@@ -25,14 +25,14 @@ void RTCScheduler::loop() {
  }
     
 
-// Check schedule events against current time
-// If event time is in past then set switch states per schedule unless override is active
-// Update next schedule next event per switch
+// Перевірка розкладу подій щодо поточного часу
+// Якщо час події минуло, установіть стани перемикачів за розкладом, якщо не активовано заміну
+// Оновити наступний розклад наступної події для кожного комутатора
 }
 
 void RTCScheduler::dump_config(){
-    ESP_LOGCONFIG(TAG, "Scheduler component");
-    ESP_LOGCONFIG(TAG, "RTC Scheduler Controller -- %s", this->name_.c_str());
+    ESP_LOGCONFIG(TAG, "Компонент планувальника");
+    ESP_LOGCONFIG(TAG, "RTC Контролер планувальника -- %s", this->name_.c_str());
      std::string service_sched_name;
      service_sched_name =  this->name_;
  // remove the spaces
@@ -41,8 +41,8 @@ void RTCScheduler::dump_config(){
         service_sched_name.replace(i, 1, "_");
     }
 }
-ESP_LOGCONFIG(TAG, "RTC Scheduler Controller name -- %s", service_sched_name.c_str());
-    // TODO dump config for EEPROM and Switches
+ESP_LOGCONFIG(TAG, "RTC імя контролера планувальника -- %s", service_sched_name.c_str());
+    // TODO дамп конфігурації для EEPROM і комутаторів
 
     
 }
@@ -50,8 +50,8 @@ void RTCScheduler::configure_storage(){
   storage_configured = true;
   storage_valid_ = false;
   // Calc the scheduler slot size
-  this->slot_size_ = (this->max_switch_events_ * 2) + 4; // convert numbers events to bytes and add 4 for config words
-  //  lets check eeprom is valid
+  this->slot_size_ = (this->max_switch_events_ * 2) + 4; // перетворити події чисел у байти та додати 4 для слів конфігурації
+  //  дозволяє перевірити дійсність eeprom
   if (storage_!=nullptr)
     {
       uint16_t data1;
@@ -62,49 +62,49 @@ void RTCScheduler::configure_storage(){
       if (( data1 == SCHEDULER_VALID_WORD_1 ) and ( data2 == SCHEDULER_VALID_WORD_2 ))
         {
           storage_valid_ = true;
-           ESP_LOGD(TAG, "Scheduler good - looking for valid slots");
-          for (uint16_t i = 0; i < this->scheduled_items_.size(); i++)  // step through the items in the slot
+           ESP_LOGD(TAG, "Планувальник хороший - шукає дійсні слоти");
+          for (uint16_t i = 0; i < this->scheduled_items_.size(); i++)  // проходити між предметами в слоті
             {
-               // Check if slot is valid, if not move on
+               // Перевірте, чи слот дійсний, якщо ні, рухайтеся далі
                 this->storage_->read_object(this->get_slot_starting_address(i),data1); 
                 if (data1 == SLOT_VALID_WORD_1)
                 {
-                     // Check if checksum is correct
+                     // Перевірте, чи правильна контрольна сума
                     if (this->check_the_cksm(i))
                     {
-                      // Now checks have passed set item to valid
+                      // Тепер перевірки дали встановлений елемент на дійсний
                       this->set_slot_valid(i,true);
-                       ESP_LOGD(TAG, "Scheduler - Slot %d valid", i+1);
-                       //TODO Need set sw state of the item depending on mode and previous state from schedule
+                       ESP_LOGD(TAG, "Розклад - Слот %d дійсний", i+1);
+                       //TODO Необхідно встановити програмний стан елемента залежно від режиму та попереднього стану з розкладу
                        
                     }
                     else
                     {
-                        // Checksum failed so set item to invalid
+                        // Помилка контрольної суми, тому встановіть для елемента значення недійсне
                       this->set_slot_valid(i,false);
-                      ESP_LOGD(TAG, "Scheduler - Slot %d checksum failed", i+1);
+                      ESP_LOGD(TAG, "Розклад - Слот %d контрольна сума невірна", i+1);
                     }
                 }
                 else
                 {
-                   ESP_LOGD(TAG, "Scheduler - Slot %d not valid", i+1);
+                   ESP_LOGD(TAG, "Розклад - Слот %d не дійсний", i+1);
                 }
             }
 
         }
       else
         {
-          // not configured so configure it now
+          // не налаштовано, тому налаштуйте його зараз
           data1=SCHEDULER_VALID_WORD_1;
           data2=SCHEDULER_VALID_WORD_2;
           this->storage_->write_object(this->storage_offset_,data1);
           this->storage_->write_object(this->storage_offset_+2,data2);
           storage_valid_ = true;
           data1 = SLOT_INVALID_WORD_1;
-          // by definition all slots in this scheduler are invalid
-          // can happen if the number of slots of previous scheduler changes
-          // Now setup the slots for this scheuler (This means setting them not valid)
-          // first check the number of slots and max events for this scheduler are valid for safety
+          // за замовчуванням усі слоти в цьому планувальнику недійсні
+          // може змінитися, якщо кількість слотів попереднього планувальника зміниться
+          // Тепер налаштуйте слоти для цього планувальника (це означає, що вони недійсні)
+          // спочатку перевірте кількість слотів і максимальну кількість подій для цього планувальника для безпеки
           if ((this->max_switch_events_>=1) and (this->scheduled_items_count_>=1))
             {
               for (uint16_t i = 0; i < this->scheduled_items_.size(); i++)  // step through the sw items
@@ -113,28 +113,28 @@ void RTCScheduler::configure_storage(){
                 //  set item to invalid
                 this->set_slot_valid(i,false);
                } 
-              // TODO Send message to ha to tell the user to programme the schedules
-              this->parent_->send_notification_to_ha("Scheduler Ready", "Need to send schedule to"+this->name_+"for scheduler to opperate","432" );
+              // TODO Надішліть повідомлення ha, щоб повідомити користувачеві про програмування розкладів
+              this->parent_->send_notification_to_ha("Читання розкладу", "Потрібно надіслати розклад"+this->name_+"для роботи планувальника","432" );
               
-               ESP_LOGD(TAG, "Scheduler storage ready - HA user needs to send schedules");  
+               ESP_LOGD(TAG, "Сховище планувальника готове - користувач HA повинен надіслати розклади");  
             }
           else
             {
-              // Should never get here as config validation should cover this
+              // Ніколи не має потрапляти сюди, оскільки перевірка конфігурації має охоплювати це
               storage_valid_ = false;
-              ESP_LOGD(TAG, "Config not correct - scheduler will not opperate");
+              ESP_LOGD(TAG, "Неправильна конфігурація – планувальник не працюватиме");
             }
         }
     }
   else
     {
         storage_valid_ = false;
-        ESP_LOGD(TAG, "Storage not detected - scheduler will not opperate");
-        // TODO raise error with HA
-        this->parent_->send_notification_to_ha("Scheduler Error", "Storage not detected","433" );
+        ESP_LOGD(TAG, "Сховище не виявлено – планувальник не працюватиме");
+        // TODO викликати помилку за допомогою HA
+        this->parent_->send_notification_to_ha("Помилка планувальника", "Сховище не виявлено","433" );
     }
 }
-void RTCScheduler:: test(){
+/*void RTCScheduler:: test(){
                 ESP_LOGD(TAG, "Sched Mem size in bytes: %d",this->storage_->get_memory_size());
 //                int myValue2 = -366;
 //                this->storage_->write_object(10, myValue2); //(location, data)
@@ -142,33 +142,33 @@ void RTCScheduler:: test(){
                 this->storage_->read_object(10, myRead2); //location to read, thing to put data into
                 ESP_LOGD(TAG, "I as sched read: %d",myRead2 );
 }
-
+*/
 
 void RTCScheduler::on_text_schedule_recieved(int schedule_slot_id, std::string &events) {
-    ESP_LOGD(TAG, "%s Text Schedule Slot %d   recieved %s",this->name_.c_str(), schedule_slot_id, events.c_str());
-    this->parent_->send_notification_to_ha("Text Rxed","Have rx a text schedule","103");
+    ESP_LOGD(TAG, "%s Текст розкладу слоту %d   отримано %s",this->name_.c_str(), schedule_slot_id, events.c_str());
+    this->parent_->send_notification_to_ha("Текст отримано","Є текст розкладу","103");
     
-    //TODO convert to internal format and store it
+    //TODO конвертувати у внутрішній формат і зберегти його
 
 }
 
 void RTCScheduler::on_schedule_recieved(int schedule_slot_id,  std::vector<int> days ,std::vector<int> hours ,std::vector<int> minutes, std::vector<std::string> &actions) {
-    ESP_LOGD(TAG, "%s Schedule Slot %d   recieved",this->name_.c_str(), schedule_slot_id);
-    ESP_LOGD(TAG, "Entries Count - Day:%d, Hours: %d Mins:%d, Actions: %d",days.size(),hours.size(), minutes.size(), actions.size() );
-    this->parent_->send_log_message_to_ha("error","The test message from Controller","ESPHome: boiler_controller");
-    //TODO convert to internal format and store it
-    // Verify and write data to eeprom
+    ESP_LOGD(TAG, "%s Розклад слоту %d   отримано",this->name_.c_str(), schedule_slot_id);
+    ESP_LOGD(TAG, "Кількість записів - Day:%d, Hours: %d Mins:%d, Дія: %d",days.size(),hours.size(), minutes.size(), actions.size() );
+    this->parent_->send_log_message_to_ha("помилка","Тестове повідомлення від контролера","ESPHome: boiler_controller");
+    //TODO конвертувати у внутрішній формат і зберегти його
+    // Перевірте та запишіть дані в eeprom
    
-    // Setup next schedule next event per switch
+    // Налаштувати наступний розклад наступної події для комутатора
 }
 
 void  RTCScheduler::on_schedule_erase_recieved(int schedule_slot_id){
-    ESP_LOGD(TAG, "%s Schedule Slot %d  erase recieved",this->name_.c_str() ,schedule_slot_id);
-    // TODO Mark slot as inactive and clear data
+    ESP_LOGD(TAG, "%s Розклад слота %d  стерти",this->name_.c_str() ,schedule_slot_id);
+    // TODO Позначте слот як неактивний і очистіть дані
 }
 void  RTCScheduler::on_erase_all_schedules_recieved(){
-        ESP_LOGD(TAG, "%s Erase all schedules recieved",this->name_.c_str());
-        // TODO Mark all slots as inactive and clear data and disable schedule loop
+        ESP_LOGD(TAG, "%s Стерти увесь розклад",this->name_.c_str());
+        // TODO Позначте всі слоти як неактивні та очистіть дані та вимкніть цикл розкладу
 }
 void RTCScheduler::add_controller(RTCScheduler *other_controller)
 {
@@ -193,10 +193,10 @@ float RTCScheduler::get_setup_priority() const { return setup_priority::DATA; }
 
 void RTCScheduler::resume_or_start_schedule_controller()
 {
-  //TODO write scheduler start up code
-    ESP_LOGD(TAG, "Startup called");
+  //TODO написати код запуску планувальника
+    ESP_LOGD(TAG, "Запуск");
     if (this->controllerStatus_ != nullptr) {
-      this->controllerStatus_->publish_state("Controller On");
+      this->controllerStatus_->publish_state("Контролер вкл.");
       this->ctl_on_sensor_->publish_state(true);
 
     }
@@ -204,10 +204,10 @@ void RTCScheduler::resume_or_start_schedule_controller()
 }
 void RTCScheduler::shutdown_schedule_controller()
 {
-  //TODO write scheduler shutdown code
-  ESP_LOGD(TAG, "Shutdown called");
+  //TODO написати код вимкнення планувальника
+  ESP_LOGD(TAG, "Зупинка");
     if (this->controllerStatus_ != nullptr) {
-      this->controllerStatus_->publish_state("Controller Off");
+      this->controllerStatus_->publish_state("Контролер викл.");
       this->ctl_on_sensor_->publish_state(false);
 
     }
@@ -216,17 +216,17 @@ void RTCScheduler::set_main_switch_status(RTCSchedulerTextSensor *controller_Sta
 {
   controllerStatus_ = controller_Status;
   if (this->controllerStatus_ != nullptr) {
-    controllerStatus_->publish_state("Initialising");
+    controllerStatus_->publish_state("Ініціалізація");
   }
 }
 
 void RTCScheduler::add_scheduled_item(uint8_t item_slot_number, RTCSchedulerControllerSwitch *item_sw, switch_::Switch *item_sw_id,RTCSchedulerTextSensor *item_status,RTCSchedulerTextSensor *item_next_event, RTCSchedulerItemMode_Select *item_mode_select, binary_sensor::BinarySensor *item_on_indicator)
 {
    this->item_mode_select_ = item_mode_select;
-   //TODO need to update the validity of the slot before calling the configure
-   this->scheduled_items_.push_back(this->item_mode_select_); // Add to the list of scheduled items
-   // Configure the new scheduled item
-   this->scheduled_items_count_++;  // increase the number of schedule items by 1
+   //TODO потрібно оновити дійсність слота перед викликом configure
+   this->scheduled_items_.push_back(this->item_mode_select_); // Додати до списку запланованих пунктів
+   // Налаштуйте новий запланований елемент
+   this->scheduled_items_count_++;  // збільшити кількість пунктів розкладу на 1
    this->item_mode_select_->configure_item(item_slot_number, item_sw,item_sw_id,item_status, item_next_event,  item_on_indicator);
 }
 RTCSchedulerItemMode_Select* RTCScheduler::get_scheduled_item_from_slot(uint8_t slot)
@@ -242,7 +242,7 @@ RTCSchedulerItemMode_Select* RTCScheduler::get_scheduled_item_from_slot(uint8_t 
 }
 uint16_t RTCScheduler::get_slot_starting_address(uint8_t slot)
 {
-  // calc the address of the start of the slot (offset + 4 bytes for scheduler valid) plus (slot size in bytes  * the slot)
+  // обчислити адресу початку слота (зміщення + 4 байти для планувальника) плюс (розмір слота в байтах * слот)
   return ((this->storage_offset_ + 4) + (this->slot_size_  * slot));
 }
 bool RTCScheduler::check_the_cksm(uint8_t slot)
@@ -263,7 +263,7 @@ uint16_t RTCScheduler::calculate_slot_cksm(uint8_t slot)
   uint16_t crc = 0xFFFF;
   uint8_t data;
   while (len--) {
-    // read the data from storage
+    // читати дані зі сховища
     this->storage_->read_object(data_addr, data);
     crc ^= data;
     data_addr++;
@@ -284,7 +284,7 @@ void RTCScheduler::set_slot_valid(uint8_t item_slot_number, bool valid)
   RTCSchedulerItemMode_Select* sched_item = get_scheduled_item_from_slot(item_slot_number);
   if(sched_item != nullptr){
     sched_item->set_item_schedule_valid(valid);
-    ESP_LOGD(TAG, "setting slot %d", item_slot_number);
+    ESP_LOGD(TAG, "налаштування слота %d", item_slot_number);
   }
 }
 void RTCScheduler::set_slot_sw_state(uint8_t item_slot_number, bool sw_state)
@@ -369,7 +369,7 @@ void RTCSchedulerControllerSwitch::setup()
   if (!restored.has_value())
     return;
 
-  ESP_LOGD(TAG, "  Restored state %s", ONOFF(*restored));
+  ESP_LOGD(TAG, "  Відновлений стан %s", ONOFF(*restored));
   if (*restored) {
     this->turn_on();
   } else {
@@ -380,7 +380,7 @@ void RTCSchedulerControllerSwitch::setup()
 void RTCSchedulerControllerSwitch::dump_config()
 {
     LOG_SWITCH("", "RTCSchedulerController Switch", this);
-  ESP_LOGCONFIG(TAG, "  Restore State: %s", YESNO(this->restore_state_));
+  ESP_LOGCONFIG(TAG, "  Відновити стан: %s", YESNO(this->restore_state_));
   ESP_LOGCONFIG(TAG, "  Optimistic: %s", YESNO(this->optimistic_));
 
 }
@@ -443,9 +443,9 @@ void RTCSchedulerControllerSwitch::write_state(bool state)
     this->publish_state(state);
 }
 
-// TODO add switch setting code
-//TODO add switch monitoring code
-//TODO Add service to accept string schedule per slot from text boxes
+// TODO додати код налаштування перемикача
+//TODO додати код моніторингу комутатора
+//TODO Додайте службу для прийняття розкладу рядків на слот із текстових полів
 RTCSchedulerControllerSwitch *controller_sw_{nullptr};
 
 /* void RTCSchedulerTextSensor::dump_config()
