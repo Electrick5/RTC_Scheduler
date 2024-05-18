@@ -20,24 +20,24 @@ namespace esphome {
 namespace rtc_scheduler {
 /* 
 enum SchedulerMode : uint8_t {
-  IDLE,      // Schedule Controller is off
-  AUTO_RUN,    // Schedule Controller is running
-  MANUAL_RUN,    // Switches are all under manual control
+  IDLE,      // Контролер розкладу вимкнено
+  AUTO_RUN,    // Контролер розкладу запущено
+  MANUAL_RUN,    // Всі перемикачі знаходяться в ручному управлінні
 };
 
 enum ScheduledSwState : uint8_t {
-  MANUAL_OFF,  // Switch is manually off until mode is changed
-  EARLY_OFF,  // Switch is manually off until next on event
-  AUTO_OFF,    // Switch is scheduled off
-  MANUAL_ON,   // Switch is manually on until mode is changed
-  BOOST_ON,    // Switch is boosted on until next off event
-  AUTO_ON      // Switch is scheduled on
+  MANUAL_OFF,  // Перемикач вимикається вручну до зміни режиму
+  EARLY_OFF,  // Перемикач вручну вимкнено до наступної події
+  AUTO_OFF,    // Перемикач заплановано вимкнено
+  MANUAL_ON,   // Перемикач увімкнено вручну до зміни режиму
+  BOOST_ON,    // Перемикач увімкнено до наступного вимкнення
+  AUTO_ON      // Перемикач заплановано ввімкнено
 };
 
 enum ScheduledSwMode : uint8_t {
-  AUTO_MODE,  // Switch is under scheduler control
-  MANUAL_MODE,  // Switch is under manual control
-  SETUP_MODE    // Schedule for switch is not available 
+  AUTO_MODE,  // Перемикач знаходиться під контролем планувальника
+  MANUAL_MODE,  // Перемикач знаходиться в ручному управлінні
+  SETUP_MODE    // Розклад для перемикання недоступний
 };
 */
 struct struct_schedule_event
@@ -62,11 +62,11 @@ static const uint16_t SLOT_INVALID_WORD_1 = 0x55AA;
 static const uint16_t SLOT_VALID_WORD_1 = 0x5A5A;
 
 
-class RTCScheduler;                  // this component
-class RTCSchedulerControllerSwitch;  // Main switch for the controller
-class RTCSchedulerTextSensor;         // Text sensor to display status to HA frontend
-class RTCSchedulerItemMode_Select;    // Select that sets the mode of the scheduled item
-class RTCSchedulerHub;                // The master component
+class RTCScheduler;                  // цей компонент
+class RTCSchedulerControllerSwitch;  // Головний вимикач для контролера
+class RTCSchedulerTextSensor;         // Датчик тексту для відображення статусу в інтерфейсі HA
+class RTCSchedulerItemMode_Select;    // Виберіть, який встановлює режим запланованого елемента
+class RTCSchedulerHub;                // Головний компонент
 template<typename... Ts> class ShutdownAction;
 template<typename... Ts> class StartAction;
 
@@ -118,7 +118,7 @@ class RTCScheduler : public Component, public api::CustomAPIDevice  {
     void set_scheduled_items_count_(uint8_t items_count) { this->scheduled_items_count_ = items_count; }
     void set_events_per_switch(uint16_t max_switch_events) { this->max_switch_events_ = max_switch_events; }
     float get_setup_priority() const override;
-    /// add another controller to the controller so it can check slots
+    /// додайте інший контролер до контролера, щоб він міг перевіряти слоти
     void add_controller(RTCScheduler *other_controller);
     void set_controller_main_switch(RTCSchedulerControllerSwitch *controller_switch);
     void resume_or_start_schedule_controller();
@@ -145,8 +145,8 @@ class RTCScheduler : public Component, public api::CustomAPIDevice  {
     external_eeprom::ExtEepromComponent *storage_;
     uint16_t storage_offset_;
     bool storage_configured = false;
-    uint8_t scheduled_items_count_ = 0;      // Number active scheduled items
-    uint16_t slot_size_ = 0;            // This is num of bytes for a slot
+    uint8_t scheduled_items_count_ = 0;      // Номер активних запланованих елементів
+    uint16_t slot_size_ = 0;            // Це кількість байтів для слота
     uint16_t max_switch_events_;
     bool storage_valid_ = false;
     bool check_the_cksm(uint8_t slot);
@@ -155,11 +155,11 @@ class RTCScheduler : public Component, public api::CustomAPIDevice  {
     void configure_storage();
     std::string name_;
     RTCSchedulerItemMode_Select* get_scheduled_item_from_slot(uint8_t slot);
-    // Other Controller instances we should be aware of (used to check if slots are conflicting)
+    // Інші екземпляри контролера, про які ми повинні знати (використовуються для перевірки конфлікту слотів)
     std::vector<RTCScheduler *> other_controllers_;
-    // List of scheduled item components
+    // Список компонентів запланованих позицій
     std::vector<RTCSchedulerItemMode_Select*> scheduled_items_;
-    // Vector to hold event times before being stored
+    // Вектор для зберігання часу подій перед збереженням
     std::vector<struct_schedule_event> events_for_storage_;
   
     std::string controller_mode_state_;
