@@ -80,12 +80,12 @@ double ExtEepromComponent::read_double(uint32_t memaddr) {
   this->read(memaddr, (uint8_t *) &val, sizeof(double));
   return val;
 }
-/// @brief Bulk read from the device
-/// @note breaking up read amt into 32 byte chunks (can be overriden with setI2Cbuffer_size)
-/// @note Handles a read that straddles the 512kbit barrier
-/// @param memaddr is the starting location to read
-/// @param buff is the pointer to an array of bytes that will be used to store the data received
-/// @param buffer_size is the size of the buffer and also the number of bytes to be read
+/// @brief Масове читання з пристрою
+/// @note розбиття обсягу читання на 32-байтові фрагменти (можна змінити за допомогою setI2Cbuffer_size)
+/// @note Обробляє зчитування, яке долає бар'єр 512 Кбіт
+/// @param memaddr є початковим розташуванням для читання
+/// @param buff — це вказівник на масив байтів, які будуть використовуватися для зберігання отриманих даних
+/// @param buffer_size — це розмір буфера, а також кількість байтів для читання
 void ExtEepromComponent::read(uint32_t memaddr, uint8_t *buff, uint16_t buffer_size) {
   ESP_LOGVV(TAG, "Read %d bytes from address %d", buffer_size, memaddr);
   uint16_t size = buffer_size;
